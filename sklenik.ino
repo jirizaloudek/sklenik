@@ -47,7 +47,7 @@ void setup()
   // init clock
   rtc.begin();
   //rtc.adjust(DateTime(F(__DATE__), F(__TIME__)));
-  rtc.adjust(DateTime(2020, 3, 1, 4, 59, 20));
+  //rtc.adjust(DateTime(2020, 3, 1, 4, 59, 20));
 }
 
 void loop()
@@ -70,7 +70,7 @@ void loop()
   }
 
   // PUMP Section
-  if (dateTime.second() == 0 && dateTime.minute() == 0) {
+  if (dateTime.second() == 0 && (dateTime.minute() == 0 || dateTime.minute() == 30)) {
     pump_seconds = PUMP_SECOND_PHASE;
   }
 
@@ -82,19 +82,13 @@ void loop()
   }
 
   // FAN and huminity Section
-  if (hum < HUM_THRESHOLD) {
+  if (hum < HUM_THRESHOLD || (dateTime.minute()  == 0 || dateTime.minute() == 30)) {
     analogWrite(PIN_OUT_FAN, MAX_FAN);
     analogWrite(PIN_OUT_HUM, 255);
   } else {
+    // no ventilation time and huminity is ok, switch off the fan and huminizer
     analogWrite(PIN_OUT_HUM, 0);
-
-    // switch fan on every 30 minutes to ventilate
-    if (dateTime.minute()  == 0 || dateTime.minute() == 30) {
-      analogWrite(PIN_OUT_FAN, MAX_FAN);
-    } else {
-      // no ventilation time and huminity is ok, switch off the fan
-      analogWrite(PIN_OUT_FAN, 0);
-    }
+    analogWrite(PIN_OUT_FAN, 0);
   }
 
   // vypíšeme informace po sériové lince
