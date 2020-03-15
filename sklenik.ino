@@ -26,6 +26,7 @@ const int MAX_FAN = 255;
 const int MAX_PUMP = 255;
 
 const int PUMP_SECOND_PHASE = 70;
+const int FAN_SECOND_PHASE = 240;
 
 const int HUM_THRESHOLD = 95;
 
@@ -34,6 +35,7 @@ DateTime dateTime;
 float hum;
 float temp;
 int pump_seconds = 0;
+int fan_seconds = 0;
 boolean pump_started = false;
 
 
@@ -70,7 +72,7 @@ void loop()
   }
 
   // PUMP Section
-  if (dateTime.second() == 0 && (dateTime.minute() == 0 || dateTime.minute() == 30)) {
+  if (dateTime.second() == 0 && (dateTime.minute() == 5 || dateTime.minute() == 35)) {
     pump_seconds = PUMP_SECOND_PHASE;
   }
 
@@ -82,14 +84,21 @@ void loop()
   }
 
   // FAN and huminity Section
-  if (hum < HUM_THRESHOLD || (dateTime.minute()  == 0 || dateTime.minute() == 30)) {
+  // run every 15 minutes
+  if (hum < HUM_THRESHOLD || !(dateTime.minute() % 15)) {
+    fan_seconds = FAN_SECOND_PHASE;
+  }
+
+ if (fan_seconds > 0) {
     analogWrite(PIN_OUT_FAN, MAX_FAN);
     analogWrite(PIN_OUT_HUM, 255);
+    fan_seconds -= 1;
   } else {
     // no ventilation time and huminity is ok, switch off the fan and huminizer
     analogWrite(PIN_OUT_HUM, 0);
     analogWrite(PIN_OUT_FAN, 0);
   }
+  
 
   // vypíšeme informace po sériové lince
   Serial.print("Vlhkost: ");
