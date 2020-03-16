@@ -26,7 +26,7 @@ const int MAX_FAN = 255;
 const int MAX_PUMP = 255;
 
 const int PUMP_SECOND_PHASE = 70;
-const int FAN_SECOND_PHASE = 240;
+const int FAN_SECOND_PHASE = 120;
 
 const int HUM_THRESHOLD = 95;
 
